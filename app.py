@@ -8,7 +8,7 @@ import requests
 import traceback
 
 from dotenv import load_dotenv
-from flask import Flask, Response, request
+from flask import Flask, Response, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from pydantic import BaseModel, Field, ValidationError, EmailStr
 
@@ -20,7 +20,8 @@ ENVIRONMENT = os.environ["ENVIRONMENT"]
 if not os.path.exists("./logs"):
     os.mkdir("./logs")
 logging.basicConfig(
-    filename=f"./logs/{ENVIRONMENT}" f"-{datetime.now().strftime('%Y%m%d%H%M%S')}.log",
+    filename=f"./logs/{ENVIRONMENT}"
+    f"-{datetime.now().strftime('%Y%m%d%H%M%S')}.log",
     format="%(asctime)s - %(levelname)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
@@ -28,7 +29,9 @@ logging.basicConfig(
 
 # Initiate Flask app
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_URI", "sqlite:///users.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+    "DB_URI", "sqlite:///users.db"
+)
 db = SQLAlchemy(app)
 
 
@@ -90,7 +93,7 @@ def rate_limit():
             ):
                 return {
                     "error": "Too many requests. Please wait and try again."
-                    }, 429
+                }, 429
 
             request_timestamps[client_ip].append(current_time)
             return func(*args, **kwargs)
@@ -99,6 +102,13 @@ def rate_limit():
         return wrapped
 
     return decorator
+
+
+@app.route("/")
+def index():
+    return redirect(
+        "https://github.com/ivanliedtke/stock-market-service", code=302
+    )
 
 
 @app.route("/signup", methods=["POST"])
