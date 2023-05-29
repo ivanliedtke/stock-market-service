@@ -1,0 +1,10 @@
+flask
+Flask-Limiter
+flask_sqlalchemy
+pre-commit
+pydantic
+pydantic[email]
+pydantic-sqlalchemy
+pytest
+python-dotenv
+requests
